@@ -1,0 +1,20 @@
+server:
+  error:
+    include-message: always
+    include-binding-errors: always
+
+spring:
+  datasource:
+    initialization-mode: always
+    password: password
+    username: test_user_tea
+    url: jdbc:postgresql://localhost:5432/library
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
