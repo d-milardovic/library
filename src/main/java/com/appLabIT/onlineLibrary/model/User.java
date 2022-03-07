@@ -21,5 +21,5 @@ public class User {
     private String lastName;
     private String email;
     private Integer bookCounter;
-    private List<User> borrowedBooks;
+    //private List<Book> borrowedBooks;
 }
