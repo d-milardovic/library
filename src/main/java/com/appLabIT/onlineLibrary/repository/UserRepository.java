@@ -2,6 +2,10 @@ package com.appLabIT.onlineLibrary.repository;
 
 import com.appLabIT.onlineLibrary.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User,String> {
+import java.util.Optional;
+
+@Repository
+public interface UserRepository extends JpaRepository<User,Integer> {
 }
