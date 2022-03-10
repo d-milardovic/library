@@ -5,6 +5,9 @@ import com.appLabIT.onlineLibrary.model.dto.UserDto;
 import com.appLabIT.onlineLibrary.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
+
 @RestController
 @RequestMapping("/library")
 public class UserController {
@@ -22,4 +25,9 @@ public class UserController {
 
     @RequestMapping(value = "/deleteUser/{userId}", method = RequestMethod.DELETE)
     public void deleteUser(@PathVariable Integer userId){ userService.deleteUser(userId);}
+
+    @RequestMapping(value = "updateUser/{userId}", method = RequestMethod.PUT)
+    public Optional<User> updateUser(@PathVariable Integer userId, @RequestBody UserDto userDto){
+        return userService.updateUser(userId, userDto);
+    }
 }

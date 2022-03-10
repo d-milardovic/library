@@ -5,22 +5,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-
+import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "books")
-public class Book {
+@Table(name = "user_books")
+public class UserBook {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String name;
-    private String author;
-    private Integer numberOfBooks;
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
-    private List<UserBook> userBooks = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book book;
 
+    private Date startRent;
+    private Date endRent;
 }

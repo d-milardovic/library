@@ -1,9 +1,12 @@
 package com.appLabIT.onlineLibrary.service.impl;
 
 import com.appLabIT.onlineLibrary.model.Book;
+import com.appLabIT.onlineLibrary.model.User;
 import com.appLabIT.onlineLibrary.model.dto.BookDto;
 import com.appLabIT.onlineLibrary.repository.BookRepository;
 import com.appLabIT.onlineLibrary.service.BookService;
+
+import java.util.Optional;
 
 public class BookServiceImpl implements BookService {
 
@@ -26,5 +29,16 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteBook(Integer bookId) {
         bookRepository.deleteById(bookId);
+    }
+
+    @Override
+    public Optional<Book> updateBook(Integer bookId, BookDto bookDto) {
+        Optional<Book> updateBook = bookRepository.findById(bookId);
+
+        updateBook.get().setName(bookDto.getName());
+        updateBook.get().setAuthor(bookDto.getAuthor());
+        updateBook.get().setNumberOfBooks(bookDto.getNumberOfBooks());
+        updateBook.ifPresent(bookRepository::save);
+        return updateBook;
     }
 }

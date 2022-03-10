@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -19,6 +21,8 @@ public class User {
     private String name;
     private String lastName;
     private String email;
-    private Integer bookCounter;
-    //private List<User> borrowedBooks;
+    private Integer borrowBookCounter;
+    @OneToMany(mappedBy = "user")
+    private List<UserBook> userBooks = new ArrayList<>();
+
 }
