@@ -5,6 +5,7 @@ import com.appLabIT.onlineLibrary.model.dto.UserDto;
 import com.appLabIT.onlineLibrary.repository.UserRepository;
 import com.appLabIT.onlineLibrary.service.UserService;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 
@@ -20,9 +21,11 @@ public class UserServiceImpl implements UserService {
     public User addUser(UserDto userDto) {
 
         User newUser = new User();
-        newUser.setEmail(userDto.getEmail());
-        newUser.setLastName(userDto.getLastName());
         newUser.setName(userDto.getName());
+        newUser.setLastName(userDto.getLastName());
+        newUser.setEmail(userDto.getEmail());
+        newUser.setBorrowBookCounter(0);
+        newUser.setRents(new HashSet<>());
 
         userRepository.save(newUser);
         return newUser;

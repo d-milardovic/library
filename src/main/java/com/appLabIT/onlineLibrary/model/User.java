@@ -1,13 +1,12 @@
 package com.appLabIT.onlineLibrary.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -23,6 +22,6 @@ public class User {
     private String email;
     private Integer borrowBookCounter;
     @OneToMany(mappedBy = "user")
-    private List<UserBook> userBooks = new ArrayList<>();
+    private Set<Rent> rents = new HashSet<>();
 
 }

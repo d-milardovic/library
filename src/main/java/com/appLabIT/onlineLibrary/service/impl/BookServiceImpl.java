@@ -1,11 +1,11 @@
 package com.appLabIT.onlineLibrary.service.impl;
 
 import com.appLabIT.onlineLibrary.model.Book;
-import com.appLabIT.onlineLibrary.model.User;
 import com.appLabIT.onlineLibrary.model.dto.BookDto;
 import com.appLabIT.onlineLibrary.repository.BookRepository;
 import com.appLabIT.onlineLibrary.service.BookService;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 public class BookServiceImpl implements BookService {
@@ -21,7 +21,9 @@ public class BookServiceImpl implements BookService {
         Book newBook = new Book();
         newBook.setName(bookDto.getName());
         newBook.setAuthor(bookDto.getAuthor());
-
+        newBook.setNumberOfBooks(bookDto.getNumberOfBooks());
+        newBook.setBookType(bookDto.getBookType());
+        newBook.setRents(new HashSet<>());
         bookRepository.save(newBook);
         return newBook;
     }

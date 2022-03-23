@@ -5,23 +5,32 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user_books")
-public class UserBook {
+@Table(name = "rents")
+public class Rent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "book_id")
     private Book book;
 
-    private Date startRent;
-    private Date endRent;
+    private Instant startRent;
+    private Instant endRent;
+
+    public Rent(User user, Book book){
+        this.user = user;
+        this.book = book;
+    }
+    public Rent (Integer rentId){
+        this.id = rentId;
+    }
 }
