@@ -1,12 +1,11 @@
 package com.appLabIT.onlineLibrary.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import javax.validation.constraints.Min;
+
 
 @Data
 @AllArgsConstructor
@@ -20,8 +19,9 @@ public class User {
     private String name;
     private String lastName;
     private String email;
+    @Min(value = 0, message = "Can't be under zero!")
     private Integer borrowBookCounter;
-    @OneToMany(mappedBy = "user")
-    private Set<Rent> rents = new HashSet<>();
+    @Min(value = 0, message = "Can't be under zero!")
+    private Integer counterNewBookType;
 
 }

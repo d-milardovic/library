@@ -4,11 +4,16 @@ import com.appLabIT.onlineLibrary.model.Book;
 import com.appLabIT.onlineLibrary.model.Rent;
 import com.appLabIT.onlineLibrary.model.User;
 
+import java.util.List;
 import java.util.Set;
 
 
 public interface RentService {
-    User rentBook(Integer userId, Set<Book> books);
+    List<Book> rentBook(Integer userId, List<Integer> bookId);
 
-    Rent returnBook(Integer rentId);
+    List<Rent> returnBook(List<Integer> rentId);
+
+    List<Rent> getAllUserRents(Integer userId);
+
+    void deleteRent(Integer rentId);
 }

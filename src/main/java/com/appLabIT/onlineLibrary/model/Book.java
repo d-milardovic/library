@@ -22,7 +22,5 @@ public class Book {
     private String author;
     private Integer numberOfBooks;
     private BookType bookType;
-    @OneToMany(mappedBy = "book")
-    private Set<Rent> rents = new HashSet<>();
 
 }

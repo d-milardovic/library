@@ -14,4 +14,5 @@ public class UserDto {
     private String email;
     private Integer borrowBookCounter;
     private BookType bookType;
+    private Integer counterNewBookType;
 }

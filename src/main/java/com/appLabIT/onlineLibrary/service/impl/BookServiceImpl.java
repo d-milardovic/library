@@ -23,7 +23,6 @@ public class BookServiceImpl implements BookService {
         newBook.setAuthor(bookDto.getAuthor());
         newBook.setNumberOfBooks(bookDto.getNumberOfBooks());
         newBook.setBookType(bookDto.getBookType());
-        newBook.setRents(new HashSet<>());
         bookRepository.save(newBook);
         return newBook;
     }

@@ -5,7 +5,6 @@ import com.appLabIT.onlineLibrary.model.dto.UserDto;
 import com.appLabIT.onlineLibrary.repository.UserRepository;
 import com.appLabIT.onlineLibrary.service.UserService;
 
-import java.util.HashSet;
 import java.util.Optional;
 
 
@@ -25,7 +24,7 @@ public class UserServiceImpl implements UserService {
         newUser.setLastName(userDto.getLastName());
         newUser.setEmail(userDto.getEmail());
         newUser.setBorrowBookCounter(0);
-        newUser.setRents(new HashSet<>());
+        newUser.setCounterNewBookType(0);
 
         userRepository.save(newUser);
         return newUser;
@@ -33,7 +32,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Integer userId) {
-        userRepository.deleteById(userId);
+        var existingUser = userRepository.findById(userId);
+        if(existingUser.get().getBorrowBookCounter() == 0){
+            userRepository.deleteById(userId);
+        }else {
+            throw new IllegalArgumentException("You can not delete user because he didn't return all books!");
+        }
     }
 
     @Override

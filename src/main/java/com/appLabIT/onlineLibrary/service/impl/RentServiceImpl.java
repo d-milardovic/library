@@ -9,12 +9,11 @@ import com.appLabIT.onlineLibrary.repository.RentRepository;
 import com.appLabIT.onlineLibrary.repository.UserRepository;
 import com.appLabIT.onlineLibrary.service.RentService;
 
+import java.time.Duration;
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 public class RentServiceImpl implements RentService {
-
     private final RentRepository rentRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
@@ -24,78 +23,97 @@ public class RentServiceImpl implements RentService {
         this.userRepository = userRepository;
         this.bookRepository = bookRepository;
     }
+
     @Override
-    public User rentBook(Integer userId, Set<Book> book) {
-        var existingUser = userRepository.findById(userId).orElseThrow(IllegalArgumentException::new);
-        if(book.size() < 6){
-            for (Book borrowed : book) {
+    public List<Book> rentBook(Integer userId, List<Integer> bookId) {
+
+        var existingUser = userRepository.findById(userId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        var existingBooks = bookRepository.findAllById(bookId);
+
+        if(existingBooks.size() < 6){
+            for (Book borrowed : existingBooks) {
                 Rent newRent = new Rent(existingUser, borrowed);
-                if(checkNumberOfBooks(borrowed) && userBookCounter(existingUser)
-                        && checkBookType(existingUser.getRents()) ) {
-                    newRent.setStartRent(Instant.now());
-                    existingUser.getRents().add(newRent);
+                if(isBookAvailable(borrowed) && userBookCounter(existingUser)
+                        && checkBookType(borrowed, existingUser) ) {
+                    borrowed.setNumberOfBooks(borrowed.getNumberOfBooks() - 1);
+                    bookRepository.save(borrowed);
+                    existingUser.setBorrowBookCounter(existingUser.getBorrowBookCounter() + 1);
                     userRepository.save(existingUser);
+                    newRent.setStartRent(Instant.now());
                     rentRepository.save(newRent);
                 }
             }
         }else {
             throw new IllegalArgumentException("You can't borrow more then five books!");
         }
-        return existingUser;
-
+        return existingBooks;
     }
     @Override
-    public Rent returnBook(Integer rentId) {
+    public void deleteRent(Integer rentId) {
         var rent = rentRepository.findById(rentId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        if(checkNumberOfBooksAfterRents(rent.getBook()) && userReturnBookCounter(rent.getUser())) {
-            rent.setEndRent(Instant.now());
-            rentRepository.save(rent);
-        }else{
-            throw new IllegalArgumentException("You can't borrow this book!");
+        rent.getBook().setNumberOfBooks(rent.getBook().getNumberOfBooks() + 1);
+        bookRepository.save(rent.getBook());
+        if(rent.getBook().getBookType() == BookType.New){
+            rent.getUser().setCounterNewBookType(rent.getUser().getCounterNewBookType() - 1);
         }
-        return rent;
+        rent.getUser().setBorrowBookCounter(rent.getUser().getBorrowBookCounter() - 1);
+        userRepository.save(rent.getUser());
+        rentRepository.deleteById(rentId);
     }
 
-    public boolean checkNumberOfBooks(Book book){
-        int counter = book.getNumberOfBooks();
-        if(counter == 0){
+    @Override
+    public List<Rent> returnBook(List<Integer> rentId) {
+        var existingRent = rentRepository.findAllById(rentId);
+        for (Rent rent : existingRent) {
+            rent.getBook().setNumberOfBooks(rent.getBook().getNumberOfBooks() + 1);
+            bookRepository.save(rent.getBook());
+            if(rent.getBook().getBookType() == BookType.New){
+                rent.getUser().setCounterNewBookType(rent.getUser().getCounterNewBookType() - 1);
+            }
+            rent.getUser().setBorrowBookCounter(rent.getUser().getBorrowBookCounter() - 1);
+            userRepository.save(rent.getUser());
+            rent.setEndRent(Instant.now());
+            rentRepository.save(rent);
+
+            Duration duration = Duration.between(rent.getStartRent(), rent.getEndRent());
+            if(duration.toDays() > 30){
+                throw new IllegalArgumentException("You need to pay penalty for late return!");
+            }
+        }
+        return existingRent;
+    }
+
+    @Override
+    public List<Rent> getAllUserRents(Integer userId) {
+        return rentRepository.findByUserId(userId);
+    }
+
+    public boolean isBookAvailable(Book book){
+        if(book.getNumberOfBooks() == 0){
             throw new IllegalArgumentException("This book is not available");
         }
-        book.setNumberOfBooks(counter - 1);
-        return true;
-    }
-    public boolean checkNumberOfBooksAfterRents(Book book){
-        int counter = book.getNumberOfBooks();
-        book.setNumberOfBooks(counter + 1);
         return true;
     }
     public boolean userBookCounter(User user){
-        int counter = user.getBorrowBookCounter();
-        if(counter == 7){
+        if(user.getBorrowBookCounter() == 7){
             throw new IllegalArgumentException("You can't borrow new book because you already borrowed 7 books");
         }
-        user.setBorrowBookCounter(counter + 1);
         return true;
     }
-    public boolean userReturnBookCounter(User user){
-        int counter = user.getBorrowBookCounter();
-        user.setBorrowBookCounter(counter - 1);
-        return true;
-    }
-    public boolean checkBookType(Set<Rent> rents){
-        int newTypeCounter = 0;
-        for (Rent ignored : rents) {
-            if(ignored.getBook().getBookType() == BookType.New){
-                newTypeCounter++;
-            }
+    public boolean checkBookType(Book book, User user){
+        int allTypeCounter = user.getCounterNewBookType();
+        if(book.getBookType() == BookType.New){
+            allTypeCounter++;
         }
-        if (newTypeCounter >= 2){
-            return false;
-        }
+        if (allTypeCounter > 2){
+            throw new IllegalArgumentException("You can have just two books type New!");
+        }user.setCounterNewBookType(allTypeCounter);
+        userRepository.save(user);
         return true;
     }
-
 
 }
